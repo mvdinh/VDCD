@@ -1,0 +1,6 @@
+@VDCD.API_HostAddress = http://localhost:5077
+
+GET {{VDCD.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

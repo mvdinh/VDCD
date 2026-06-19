@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="VDCD.API/VDCD.API.csproj" />
+  <Project Path="VDCD.BL/VDCD.BL.csproj" Id="d880931a-00fc-4e99-a9a1-fabb2ccca0bd" />
+  <Project Path="VDCD.Common/VDCD.Common.csproj" Id="09da00d8-3d6d-4cf5-abc0-13bc4ffb9c05" />
+  <Project Path="VDCD.DL/VDCD.DL.csproj" Id="8b07c08f-b318-420d-953c-738f47881d70" />
+</Solution>

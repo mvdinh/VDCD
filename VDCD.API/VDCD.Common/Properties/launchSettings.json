@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "VDCD.Common": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:58944;http://localhost:58945"
+    }
+  }
+}
