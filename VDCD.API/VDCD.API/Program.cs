@@ -42,6 +42,13 @@ builder.Services.AddScoped<IBLStatistics, BLStatistics>();
 
 var app = builder.Build();
 
+// Tự động Apply Migrations (tạo bảng) khi chạy dự án
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DBContext>();
+    db.Database.Migrate();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
