@@ -12,6 +12,6 @@ namespace VDCD.DL.Interface
         Task<IEnumerable<Product>> GetAllWithCategoryAsync();
         Task<Product?> GetByIdWithCategoryAsync(Guid id);
         Task<IEnumerable<Product>> SearchByNameAsync(string name);
-        Task<bool> CheckSkuExistsAsync(string sku, Guid? excludeProductId = null);
+        Task<bool> CheckNameExistsAsync(string name, Guid? excludeProductId = null);
     }
 }

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using VDCD.Common.DTOs;
 
-namespace VDCD.BL.Services
+namespace VDCD.BL.Interface
 {
-    public interface ISalesService
+    public interface IBLOrder : VDCD.BL.Interface.IBaseBL<VDCD.Common.Model.Order>
     {
-        Task<OrderResponse> CreateOrderAsync(CreateOrderRequest request);
+        Task<OrderResponse> InsertOrderAsync(CreateOrderRequest request);
         Task<OrderResponse?> GetOrderByIdAsync(Guid id);
         Task<IEnumerable<OrderResponse>> GetAllOrdersAsync();
     }

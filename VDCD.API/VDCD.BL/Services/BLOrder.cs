@@ -1,3 +1,4 @@
+using VDCD.BL.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,32 +10,56 @@ using VDCD.DL.Interface;
 
 namespace VDCD.BL.Services
 {
-    public class SalesService : ISalesService
+    public class BLOrder : VDCD.BL.BaseBL.BaseBL<Order>, IBLOrder
     {
         private readonly IOrderDL _orderDL;
         private readonly IProductDL _productDL;
         private readonly IBaseDL<Customer> _customerDL;
+        private readonly IBaseDL<User> _userDL;
 
-        public SalesService(
+        public BLOrder(
             IOrderDL orderDL,
             IProductDL productDL,
-            IBaseDL<Customer> customerDL)
+            IBaseDL<Customer> customerDL,
+            IBaseDL<User> userDL) : base(orderDL)
         {
             _orderDL = orderDL;
             _productDL = productDL;
             _customerDL = customerDL;
+            _userDL = userDL;
         }
 
-        public async Task<OrderResponse> CreateOrderAsync(CreateOrderRequest request)
+        public async Task<OrderResponse> InsertOrderAsync(CreateOrderRequest request)
         {
+            // 0. Verify User
+            var user = await _userDL.GetByIdAsync(request.CreatedBy);
+            if (user == null)
+            {
+                throw new ArgumentException($"Người dùng với mã {request.CreatedBy} không tồn tại.");
+            }
+
             // 1. Verify Customer exists if provided
-            if (request.CustomerId.HasValue)
+            if (request.CustomerId.HasValue && request.CustomerId.Value != Guid.Empty)
             {
                 var customer = await _customerDL.GetByIdAsync(request.CustomerId.Value);
                 if (customer == null)
                 {
-                    throw new ArgumentException($"Khách hàng với mã {request.CustomerId.Value} không tồn tại.");
+                    throw new ArgumentException($"KhÃ¡ch hÃ ng vá»›i mÃ£ {request.CustomerId.Value} khÃ´ng tá»“n táº¡i.");
                 }
+            }
+            else if (!string.IsNullOrWhiteSpace(request.CustomerName))
+            {
+                // Auto-create new customer
+                var newCustomer = new Customer
+                {
+                    CustomerId = Guid.NewGuid(),
+                    CustomerName = request.CustomerName,
+                    PhoneNumber = request.PhoneNumber,
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = request.CreatedBy
+                };
+                await _customerDL.InsertAsync(newCustomer);
+                request.CustomerId = newCustomer.CustomerId;
             }
 
             // 2. Validate Order Details, stock, and calculate amounts
@@ -46,16 +71,16 @@ namespace VDCD.BL.Services
                 var product = await _productDL.GetByIdAsync(item.ProductId);
                 if (product == null)
                 {
-                    throw new ArgumentException($"Sản phẩm với mã {item.ProductId} không tồn tại.");
+                    throw new ArgumentException($"Sáº£n pháº©m vá»›i mÃ£ {item.ProductId} khÃ´ng tá»“n táº¡i.");
                 }
 
                 if (product.Quantity < item.Quantity)
                 {
-                    throw new InvalidOperationException($"Sản phẩm '{product.ProductName}' không đủ tồn kho. Hiện còn: {product.Quantity}, yêu cầu: {item.Quantity}.");
+                    throw new InvalidOperationException($"Sáº£n pháº©m '{product.ProductName}' khÃ´ng Ä‘á»§ tá»“n kho. Hiá»‡n cÃ²n: {product.Quantity}, yÃªu cáº§u: {item.Quantity}.");
                 }
 
-                // Check unit price (use provided or product default price)
-                decimal unitPrice = item.UnitPrice ?? product.Price;
+                // Enforce unit price to always be the DB product price
+                decimal unitPrice = product.Price;
                 decimal subTotal = item.Quantity * unitPrice;
                 totalAmount += subTotal;
 
@@ -69,8 +94,9 @@ namespace VDCD.BL.Services
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
                     UnitPrice = unitPrice,
-                    SubTotal = subTotal, // Handled in C# for consistency
-                    CreatedDate = DateTime.UtcNow
+                    SubTotal = subTotal, // SubTotal = Quantity * DB UnitPrice
+                    CreatedDate = DateTime.UtcNow,
+                    CreatedBy = request.CreatedBy
                 };
 
                 orderDetails.Add(detail);
@@ -88,7 +114,8 @@ namespace VDCD.BL.Services
                 FinalAmount = Math.Max(0, totalAmount - request.Discount), // Handled in C#
                 PaymentMethod = request.PaymentMethod,
                 Note = request.Note,
-                CreatedDate = DateTime.UtcNow
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = request.CreatedBy
             };
 
             foreach (var detail in orderDetails)
@@ -103,43 +130,56 @@ namespace VDCD.BL.Services
             var savedOrder = await _orderDL.GetByIdWithDetailsAsync(orderId);
             if (savedOrder == null)
             {
-                throw new InvalidOperationException("Lỗi hệ thống khi tải thông tin đơn hàng sau khi tạo.");
+                throw new InvalidOperationException("Lá»—i há»‡ thá»‘ng khi táº£i thÃ´ng tin Ä‘Æ¡n hÃ ng sau khi táº¡o.");
             }
 
-            return MapToResponse(savedOrder);
+            var users = await _userDL.GetAllAsync();
+            var userDict = users.ToDictionary(u => u.UserId, u => u.UserName);
+
+            return MapToResponse(savedOrder, userDict);
         }
 
         public async Task<OrderResponse?> GetOrderByIdAsync(Guid id)
         {
             var order = await _orderDL.GetByIdWithDetailsAsync(id);
             if (order == null) return null;
-            return MapToResponse(order);
+            
+            var users = await _userDL.GetAllAsync();
+            var userDict = users.ToDictionary(u => u.UserId, u => u.UserName);
+            
+            return MapToResponse(order, userDict);
         }
 
         public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
         {
             var orders = await _orderDL.GetAllWithDetailsAsync();
-            return orders.Select(MapToResponse);
+            var users = await _userDL.GetAllAsync();
+            var userDict = users.ToDictionary(u => u.UserId, u => u.UserName);
+            
+            return orders.Select(o => MapToResponse(o, userDict));
         }
 
-        private OrderResponse MapToResponse(Order order)
+        private OrderResponse MapToResponse(Order order, Dictionary<Guid, string> userDict)
         {
             return new OrderResponse
             {
                 OrderId = order.OrderId,
                 CustomerId = order.CustomerId,
-                CustomerName = order.Customer?.CustomerName ?? "Khách vãng lai",
+                CustomerName = order.Customer?.CustomerName ?? "KhÃ¡ch vÃ£ng lai",
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
                 Discount = order.Discount,
                 FinalAmount = order.FinalAmount,
                 PaymentMethod = order.PaymentMethod,
                 Note = order.Note,
+                CreatedBy = order.CreatedBy.HasValue && userDict.ContainsKey(order.CreatedBy.Value) ? userDict[order.CreatedBy.Value] : "Unknown User",
+                CreatedDate = order.CreatedDate,
+                ModifiedBy = order.ModifiedBy.HasValue && userDict.ContainsKey(order.ModifiedBy.Value) ? userDict[order.ModifiedBy.Value] : "Unknown User",
+                ModifiedDate = order.ModifiedDate,
                 OrderDetails = order.OrderDetails.Select(od => new OrderDetailResponse
                 {
-                    OrderDetailId = od.OrderDetailId,
                     ProductId = od.ProductId,
-                    ProductName = od.Product?.ProductName ?? "Sản phẩm không tên",
+                    ProductName = od.Product?.ProductName ?? "Sáº£n pháº©m khÃ´ng tÃªn",
                     Quantity = od.Quantity,
                     UnitPrice = od.UnitPrice,
                     SubTotal = od.SubTotal

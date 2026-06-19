@@ -8,6 +8,13 @@ namespace VDCD.Common.DTOs
     {
         public Guid? CustomerId { get; set; }
 
+        [Required(ErrorMessage = "Tên khách hàng không được để trống.")]
+        [StringLength(200, ErrorMessage = "Tên khách hàng không quá 200 ký tự.")]
+        public string CustomerName { get; set; } = string.Empty;
+
+        [StringLength(20, ErrorMessage = "Số điện thoại không quá 20 ký tự.")]
+        public string? PhoneNumber { get; set; }
+
         [Range(0, double.MaxValue, ErrorMessage = "Giảm giá phải lớn hơn hoặc bằng 0.")]
         public decimal Discount { get; set; }
 
@@ -16,6 +23,9 @@ namespace VDCD.Common.DTOs
         public string PaymentMethod { get; set; } = "Tiền mặt";
 
         public string? Note { get; set; }
+
+        [Required(ErrorMessage = "Người tạo không được để trống.")]
+        public Guid CreatedBy { get; set; }
 
         [Required(ErrorMessage = "Đơn hàng phải có ít nhất một sản phẩm.")]
         [MinLength(1, ErrorMessage = "Đơn hàng phải có ít nhất một sản phẩm.")]
@@ -30,7 +40,7 @@ namespace VDCD.Common.DTOs
         [Range(1, int.MaxValue, ErrorMessage = "Số lượng mua phải lớn hơn hoặc bằng 1.")]
         public int Quantity { get; set; }
 
-        public decimal? UnitPrice { get; set; } // Client can supply or use DB product price
+
     }
 
     public class OrderResponse
@@ -44,12 +54,17 @@ namespace VDCD.Common.DTOs
         public decimal FinalAmount { get; set; }
         public string PaymentMethod { get; set; } = string.Empty;
         public string? Note { get; set; }
+        
+        public string CreatedBy { get; set; } = string.Empty;
+        public DateTime CreatedDate { get; set; }
+        public string ModifiedBy { get; set; } = string.Empty;
+        public DateTime? ModifiedDate { get; set; }
+
         public List<OrderDetailResponse> OrderDetails { get; set; } = new List<OrderDetailResponse>();
     }
 
     public class OrderDetailResponse
     {
-        public Guid OrderDetailId { get; set; }
         public Guid ProductId { get; set; }
         public string ProductName { get; set; } = string.Empty;
         public int Quantity { get; set; }

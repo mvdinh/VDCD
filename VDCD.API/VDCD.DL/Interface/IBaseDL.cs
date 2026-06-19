@@ -14,5 +14,6 @@ namespace VDCD.DL.Interface
         Task<int> UpdateAsync(T entity);
         Task<int> DeleteAsync(Guid id);
         Task<bool> AnyAsync(System.Linq.Expressions.Expression<Func<T, bool>> predicate);
+        Task<bool> CheckDuplicateAsync(string propertyName, object value, Guid? excludeId = null);
     }
 }

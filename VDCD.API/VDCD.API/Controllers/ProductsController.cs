@@ -1,9 +1,12 @@
+using VDCD.BL.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VDCD.BL.Services;
 using VDCD.Common.DTOs;
+using VDCD.Common.Model;
+using VDCD.Common.Resources;
 
 namespace VDCD.API.Controllers
 {
@@ -11,16 +14,18 @@ namespace VDCD.API.Controllers
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductService _productService;
+        private readonly IBLProduct _productService;
 
-        public ProductsController(IProductService productService)
+        public ProductsController(IBLProduct productService)
         {
             _productService = productService;
         }
 
         /// <summary>
-        /// Xem danh sách mặt hàng gốm sứ (Hỗ trợ tìm kiếm theo tên)
+        /// Láº¥y táº¥t cáº£ sáº£n pháº©m
         /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ProductResponse>>> GetProducts([FromQuery] string? name)
         {
@@ -37,13 +42,20 @@ namespace VDCD.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = VDCD.Common.Resources.Resource1.Exception, details = ex.Message });
+                return StatusCode(500, new ErrorResult 
+                   {
+                    DevMsg = ex.Message,
+                    UserMsg = Resource1.Exception,
+                    MoreInfo = ex.Data,
+                });
             }
         }
 
         /// <summary>
-        /// Xem chi tiết một mặt hàng gốm sứ
+        /// Láº¥y sáº£n pháº©m theo ID
         /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductResponse>> GetProductById(Guid id)
         {
@@ -52,18 +64,27 @@ namespace VDCD.API.Controllers
                 var product = await _productService.GetProductByIdAsync(id);
                 if (product == null)
                 {
-                    return NotFound(new { message = $"Không tìm thấy sản phẩm có mã {id}" });
+                    return StatusCode(404, new ErrorResult
+                    {
+                        DevMsg = "Không tìm thấy sản phẩm",
+                        UserMsg = Resource1.Exception,
+                    });
                 }
                 return Ok(product);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = VDCD.Common.Resources.Resource1.Exception, details = ex.Message });
+                return StatusCode(500, new ErrorResult
+                {
+                    DevMsg = ex.Message,
+                    UserMsg = Resource1.Exception,
+                    MoreInfo = ex.Data,
+                });
             }
         }
 
         /// <summary>
-        /// Thêm mới mặt hàng gốm sứ
+        /// ThÃªm má»›i máº·t hÃ ng gá»‘m sá»©
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<ProductResponse>> CreateProduct([FromBody] ProductCreateRequest request)
@@ -75,7 +96,7 @@ namespace VDCD.API.Controllers
 
             try
             {
-                var created = await _productService.CreateProductAsync(request);
+                var created = await _productService.InsertProductAsync(request);
                 return CreatedAtAction(nameof(GetProductById), new { id = created.ProductId }, created);
             }
             catch (ArgumentException ex)
@@ -84,12 +105,17 @@ namespace VDCD.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = VDCD.Common.Resources.Resource1.Exception, details = ex.Message });
+                return StatusCode(500, new ErrorResult
+                {
+                    DevMsg = ex.Message,
+                    UserMsg = Resource1.Exception,
+                    MoreInfo = ex.Data,
+                });
             }
         }
 
         /// <summary>
-        /// Cập nhật thông tin mặt hàng gốm sứ
+        /// Cáº­p nháº­t thÃ´ng tin máº·t hÃ ng gá»‘m sá»©
         /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult<ProductResponse>> UpdateProduct(Guid id, [FromBody] ProductUpdateRequest request)
@@ -104,7 +130,11 @@ namespace VDCD.API.Controllers
                 var updated = await _productService.UpdateProductAsync(id, request);
                 if (updated == null)
                 {
-                    return NotFound(new { message = $"Không tìm thấy sản phẩm có mã {id} để cập nhật" });
+                    return StatusCode(404, new ErrorResult
+                    {
+                        DevMsg = "Không tìm thấy sản phẩm",
+                        UserMsg = Resource1.Exception,
+                    });
                 }
                 return Ok(updated);
             }
@@ -114,12 +144,17 @@ namespace VDCD.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = VDCD.Common.Resources.Resource1.Exception, details = ex.Message });
+                return StatusCode(500, new ErrorResult
+                {
+                    DevMsg = ex.Message,
+                    UserMsg = Resource1.Exception,
+                    MoreInfo = ex.Data,
+                });
             }
         }
 
         /// <summary>
-        /// Xóa mặt hàng gốm sứ
+        /// XÃ³a máº·t hÃ ng gá»‘m sá»©
         /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)
@@ -129,7 +164,11 @@ namespace VDCD.API.Controllers
                 var success = await _productService.DeleteProductAsync(id);
                 if (!success)
                 {
-                    return NotFound(new { message = $"Không tìm thấy sản phẩm có mã {id} để xóa" });
+                    return StatusCode(404, new ErrorResult
+                    {
+                        DevMsg = "Không tìm thấy sản phẩm",
+                        UserMsg = Resource1.Exception,
+                    });
                 }
                 return Ok(new { message = "Xóa sản phẩm thành công." });
             }
@@ -139,7 +178,12 @@ namespace VDCD.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = VDCD.Common.Resources.Resource1.Exception, details = ex.Message });
+                return StatusCode(500, new ErrorResult
+                {
+                    DevMsg = ex.Message,
+                    UserMsg = Resource1.Exception,
+                    MoreInfo = ex.Data,
+                });
             }
         }
     }

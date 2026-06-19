@@ -11,6 +11,7 @@ namespace VDCD.DL.ConnectDB
         }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<Unit> Units { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
@@ -28,6 +29,7 @@ namespace VDCD.DL.ConnectDB
 
             // Table mappings
             modelBuilder.Entity<Product>().ToTable("product");
+            modelBuilder.Entity<Unit>().ToTable("unit");
             modelBuilder.Entity<Category>().ToTable("category");
             modelBuilder.Entity<Order>().ToTable("orders");
             modelBuilder.Entity<OrderDetail>().ToTable("order_detail");

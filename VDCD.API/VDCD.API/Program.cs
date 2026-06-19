@@ -1,3 +1,4 @@
+using VDCD.BL.Interface;
 using Microsoft.EntityFrameworkCore;
 using VDCD.BL.Services;
 using VDCD.DL;
@@ -22,9 +23,9 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        Title = "Cửa Hàng Gốm Sứ VDCD API",
+        Title = "Cá»­a HÃ ng Gá»‘m Sá»© VDCD API",
         Version = "v1",
-        Description = "Hệ thống API quản lý bán hàng cho cửa hàng gốm sứ"
+        Description = "Há»‡ thá»‘ng API quáº£n lÃ½ bÃ¡n hÃ ng cho cá»­a hÃ ng gá»‘m sá»©"
     });
 });
 
@@ -34,9 +35,10 @@ builder.Services.AddScoped<IProductDL, ProductDL>();
 builder.Services.AddScoped<IOrderDL, OrderDL>();
 
 // Register Services
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ISalesService, SalesService>();
-builder.Services.AddScoped<IStatisticsService, StatisticsService>();
+builder.Services.AddScoped(typeof(VDCD.BL.Interface.IBaseBL<>), typeof(VDCD.BL.BaseBL.BaseBL<>));
+builder.Services.AddScoped<IBLProduct, BLProduct>();
+builder.Services.AddScoped<IBLOrder, BLOrder>();
+builder.Services.AddScoped<IBLStatistics, BLStatistics>();
 
 var app = builder.Build();
 
@@ -46,7 +48,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cửa Hàng Gốm Sứ VDCD API v1");
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Cá»­a HÃ ng Gá»‘m Sá»© VDCD API v1");
     });
 }
 

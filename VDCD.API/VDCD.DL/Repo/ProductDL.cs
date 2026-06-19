@@ -20,6 +20,7 @@ namespace VDCD.DL.Repo
         {
             return await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Unit)
                 .ToListAsync();
         }
 
@@ -27,6 +28,7 @@ namespace VDCD.DL.Repo
         {
             return await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Unit)
                 .FirstOrDefaultAsync(p => p.ProductId == id);
         }
 
@@ -37,17 +39,19 @@ namespace VDCD.DL.Repo
 
             return await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Unit)
                 .Where(p => EF.Functions.ILike(p.ProductName, $"%{name}%"))
                 .ToListAsync();
         }
 
-        public async Task<bool> CheckSkuExistsAsync(string sku, Guid? excludeProductId = null)
+        public async Task<bool> CheckNameExistsAsync(string name, Guid? excludeProductId = null)
         {
+            var lowerName = name.ToLower();
             if (excludeProductId.HasValue)
             {
-                return await _context.Products.AnyAsync(p => p.SKU == sku && p.ProductId != excludeProductId.Value);
+                return await _context.Products.AnyAsync(p => p.ProductName.ToLower() == lowerName && p.ProductId != excludeProductId.Value);
             }
-            return await _context.Products.AnyAsync(p => p.SKU == sku);
+            return await _context.Products.AnyAsync(p => p.ProductName.ToLower() == lowerName);
         }
     }
 }

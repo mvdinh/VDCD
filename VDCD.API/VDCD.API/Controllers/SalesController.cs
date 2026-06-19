@@ -1,9 +1,12 @@
+using VDCD.BL.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using VDCD.BL.Services;
 using VDCD.Common.DTOs;
+using VDCD.Common.Model;
+using VDCD.Common.Resources;
 
 namespace VDCD.API.Controllers
 {
@@ -11,15 +14,15 @@ namespace VDCD.API.Controllers
     [Route("api/[controller]")]
     public class SalesController : ControllerBase
     {
-        private readonly ISalesService _salesService;
+        private readonly IBLOrder _salesService;
 
-        public SalesController(ISalesService salesService)
+        public SalesController(IBLOrder salesService)
         {
             _salesService = salesService;
         }
 
         /// <summary>
-        /// Tạo đơn hàng mới (Bán hàng cho khách)
+        /// Táº¡o Ä‘Æ¡n hÃ ng má»›i (BÃ¡n hÃ ng cho khÃ¡ch)
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<OrderResponse>> CreateOrder([FromBody] CreateOrderRequest request)
@@ -31,7 +34,7 @@ namespace VDCD.API.Controllers
 
             try
             {
-                var response = await _salesService.CreateOrderAsync(request);
+                var response = await _salesService.InsertOrderAsync(request);
                 return CreatedAtAction(nameof(GetOrderById), new { id = response.OrderId }, response);
             }
             catch (ArgumentException ex)
@@ -44,12 +47,17 @@ namespace VDCD.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi hệ thống khi tạo đơn hàng.", details = ex.Message });
+                return StatusCode(500, new ErrorResult
+                {
+                    DevMsg = ex.Message,
+                    UserMsg = Resource1.Exception,
+                    MoreInfo = ex.Data,
+                });
             }
         }
 
         /// <summary>
-        /// Xem chi tiết một đơn hàng kèm danh sách sản phẩm đã mua
+        /// Xem chi tiáº¿t má»™t Ä‘Æ¡n hÃ ng kÃ¨m danh sÃ¡ch sáº£n pháº©m Ä‘Ã£ mua
         /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderResponse>> GetOrderById(Guid id)
@@ -59,18 +67,23 @@ namespace VDCD.API.Controllers
                 var order = await _salesService.GetOrderByIdAsync(id);
                 if (order == null)
                 {
-                    return NotFound(new { message = $"Không tìm thấy đơn hàng có mã {id}" });
+                    return NotFound(new { message = $"KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng cÃ³ mÃ£ {id}" });
                 }
                 return Ok(order);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi hệ thống.", details = ex.Message });
+                return StatusCode(500, new ErrorResult
+                {
+                    DevMsg = ex.Message,
+                    UserMsg = Resource1.Exception,
+                    MoreInfo = ex.Data,
+                });
             }
         }
 
         /// <summary>
-        /// Lấy danh sách tất cả các hóa đơn bán hàng
+        /// Láº¥y danh sÃ¡ch táº¥t cáº£ cÃ¡c hÃ³a Ä‘Æ¡n bÃ¡n hÃ ng
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAllOrders()
@@ -82,7 +95,12 @@ namespace VDCD.API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi hệ thống.", details = ex.Message });
+                return StatusCode(500, new ErrorResult
+                {
+                    DevMsg = ex.Message,
+                    UserMsg = Resource1.Exception,
+                    MoreInfo = ex.Data,
+                });
             }
         }
     }

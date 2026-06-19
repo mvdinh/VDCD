@@ -1,3 +1,4 @@
+using VDCD.BL.Interface;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,19 +10,23 @@ using VDCD.DL.ConnectDB;
 
 namespace VDCD.BL.Services
 {
-    public class StatisticsService : IStatisticsService
+    public class BLStatistics : IBLStatistics
     {
         private readonly DBContext _context;
 
-        public StatisticsService(DBContext context)
+        public BLStatistics(DBContext context)
         {
             _context = context;
         }
 
         public async Task<IEnumerable<CategorySalesQuantityResponse>> GetCategorySalesQuantityAsync(DateTime? fromDate, DateTime? toDate)
         {
-            var start = fromDate ?? DateTime.MinValue;
-            var end = toDate ?? DateTime.MaxValue;
+            var start = fromDate.HasValue 
+                ? DateTime.SpecifyKind(fromDate.Value, DateTimeKind.Utc) 
+                : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+            var end = toDate.HasValue 
+                ? DateTime.SpecifyKind(toDate.Value, DateTimeKind.Utc) 
+                : DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc);
 
             // Group order details by Category Name and calculate total quantity sold
             var report = await _context.OrderDetails
@@ -32,7 +37,7 @@ namespace VDCD.BL.Services
                 .GroupBy(od => od.Product!.Category!.CategoryName)
                 .Select(g => new CategorySalesQuantityResponse
                 {
-                    CategoryName = g.Key ?? "Chưa phân loại",
+                    CategoryName = g.Key ?? "ChÆ°a phÃ¢n loáº¡i",
                     TotalQuantitySold = g.Sum(od => od.Quantity),
                     FromDate = start,
                     ToDate = end
@@ -45,8 +50,12 @@ namespace VDCD.BL.Services
 
         public async Task<ProductRevenueResponse?> GetProductRevenueAsync(Guid productId, DateTime? fromDate, DateTime? toDate)
         {
-            var start = fromDate ?? DateTime.MinValue;
-            var end = toDate ?? DateTime.MaxValue;
+            var start = fromDate.HasValue 
+                ? DateTime.SpecifyKind(fromDate.Value, DateTimeKind.Utc) 
+                : DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc);
+            var end = toDate.HasValue 
+                ? DateTime.SpecifyKind(toDate.Value, DateTimeKind.Utc) 
+                : DateTime.SpecifyKind(DateTime.MaxValue, DateTimeKind.Utc);
 
             var product = await _context.Products.FindAsync(productId);
             if (product == null) return null;
