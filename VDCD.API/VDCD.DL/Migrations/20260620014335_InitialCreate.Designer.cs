@@ -12,8 +12,8 @@ using VDCD.DL.ConnectDB;
 namespace VDCD.DL.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20260619172012_RemoveProductSku")]
-    partial class RemoveProductSku
+    [Migration("20260620014335_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

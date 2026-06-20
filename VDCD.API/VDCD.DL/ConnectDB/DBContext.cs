@@ -45,14 +45,8 @@ namespace VDCD.DL.ConnectDB
                 }
             }
 
-            // Configure computed columns
-            modelBuilder.Entity<Order>()
-                .Property(o => o.FinalAmount)
-                .ValueGeneratedOnAddOrUpdate();
-
-            modelBuilder.Entity<OrderDetail>()
-                .Property(od => od.SubTotal)
-                .ValueGeneratedOnAddOrUpdate();
+            // Manual calculations are used instead of database computed columns
+            // FinalAmount and SubTotal are calculated in BLOrder.cs
         }
     }
 }

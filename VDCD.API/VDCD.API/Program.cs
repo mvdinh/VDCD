@@ -35,9 +35,9 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        Title = "Cá»­a HÃ ng Gá»‘m Sá»© VDCD API",
+        Title = "Cửa hàng gốm xứ",
         Version = "v1",
-        Description = "Há»‡ thá»‘ng API quáº£n lÃ½ bÃ¡n hÃ ng cho cá»­a hÃ ng gá»‘m sá»©"
+        Description = "Hệ thống API quản lý bán hàng cho cửa hàng gốm sứ"
     });
 });
 
