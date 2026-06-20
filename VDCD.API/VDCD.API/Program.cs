@@ -12,6 +12,18 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                   .AllowAnyMethod()
+                   .AllowAnyHeader();
+        });
+});
+
 // Configure EF Core with PostgreSQL
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
@@ -33,12 +45,14 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped(typeof(IBaseDL<>), typeof(BaseDL<>));
 builder.Services.AddScoped<IProductDL, ProductDL>();
 builder.Services.AddScoped<IOrderDL, OrderDL>();
+builder.Services.AddScoped<IUserDL, UserDL>();
 
 // Register Services
 builder.Services.AddScoped(typeof(VDCD.BL.Interface.IBaseBL<>), typeof(VDCD.BL.BaseBL.BaseBL<>));
 builder.Services.AddScoped<IBLProduct, BLProduct>();
 builder.Services.AddScoped<IBLOrder, BLOrder>();
 builder.Services.AddScoped<IBLStatistics, BLStatistics>();
+builder.Services.AddScoped<IBLUser, BLUser>();
 
 var app = builder.Build();
 
@@ -60,6 +74,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAll");
 
 app.UseAuthorization();
 

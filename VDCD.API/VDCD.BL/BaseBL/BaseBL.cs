@@ -70,7 +70,7 @@ namespace VDCD.BL.BaseBL
                         var isDuplicate = await _baseDL.CheckDuplicateAsync(propName, propertyValue, excludeId);
                         if (isDuplicate)
                         {
-                            throw new ArgumentException(checkDuplicateAttr.ErrorMessage ?? $"ThÃ´ng tin {propName} Ä‘Ã£ tá»“n táº¡i trong há»‡ thá»‘ng.");
+                            throw new ArgumentException(checkDuplicateAttr.ErrorMessage ?? $"Thông tin {propName} đã tồn tại trong hệ thống.");
                         }
                     }
                 }

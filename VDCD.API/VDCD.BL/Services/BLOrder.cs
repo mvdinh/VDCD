@@ -44,7 +44,7 @@ namespace VDCD.BL.Services
                 var customer = await _customerDL.GetByIdAsync(request.CustomerId.Value);
                 if (customer == null)
                 {
-                    throw new ArgumentException($"KhÃ¡ch hÃ ng vá»›i mÃ£ {request.CustomerId.Value} khÃ´ng tá»“n táº¡i.");
+                    throw new ArgumentException($"Khách hàng với mã {request.CustomerId.Value} không tồn tại.");
                 }
             }
             else if (!string.IsNullOrWhiteSpace(request.CustomerName))
@@ -71,12 +71,12 @@ namespace VDCD.BL.Services
                 var product = await _productDL.GetByIdAsync(item.ProductId);
                 if (product == null)
                 {
-                    throw new ArgumentException($"Sáº£n pháº©m vá»›i mÃ£ {item.ProductId} khÃ´ng tá»“n táº¡i.");
+                    throw new ArgumentException($"Sản phẩm với mã {item.ProductId} không tồn tại.");
                 }
 
                 if (product.Quantity < item.Quantity)
                 {
-                    throw new InvalidOperationException($"Sáº£n pháº©m '{product.ProductName}' khÃ´ng Ä‘á»§ tá»“n kho. Hiá»‡n cÃ²n: {product.Quantity}, yÃªu cáº§u: {item.Quantity}.");
+                    throw new InvalidOperationException($"Sản phẩm '{product.ProductName}' không đủ tồn kho. Hiện còn: {product.Quantity}, yêu cầu: {item.Quantity}.");
                 }
 
                 // Enforce unit price to always be the DB product price
@@ -130,7 +130,7 @@ namespace VDCD.BL.Services
             var savedOrder = await _orderDL.GetByIdWithDetailsAsync(orderId);
             if (savedOrder == null)
             {
-                throw new InvalidOperationException("Lá»—i há»‡ thá»‘ng khi táº£i thÃ´ng tin Ä‘Æ¡n hÃ ng sau khi táº¡o.");
+                throw new InvalidOperationException("Lỗi hệ thống khi tải thông tin đơn hàng sau khi tạo.");
             }
 
             var users = await _userDL.GetAllAsync();
@@ -165,7 +165,7 @@ namespace VDCD.BL.Services
             {
                 OrderId = order.OrderId,
                 CustomerId = order.CustomerId,
-                CustomerName = order.Customer?.CustomerName ?? "KhÃ¡ch vÃ£ng lai",
+                CustomerName = order.Customer?.CustomerName ,
                 OrderDate = order.OrderDate,
                 TotalAmount = order.TotalAmount,
                 Discount = order.Discount,
@@ -179,7 +179,7 @@ namespace VDCD.BL.Services
                 OrderDetails = order.OrderDetails.Select(od => new OrderDetailResponse
                 {
                     ProductId = od.ProductId,
-                    ProductName = od.Product?.ProductName ?? "Sáº£n pháº©m khÃ´ng tÃªn",
+                    ProductName = od.Product?.ProductName ,
                     Quantity = od.Quantity,
                     UnitPrice = od.UnitPrice,
                     SubTotal = od.SubTotal

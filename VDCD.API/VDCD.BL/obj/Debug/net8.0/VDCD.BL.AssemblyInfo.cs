@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("VDCD.BL")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+49cd266e6d0d5b21bf204f96fd441bccb5ac153f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dc30171fd1ebda73973834cdcc5afbb6cac06f93")]
 [assembly: System.Reflection.AssemblyProductAttribute("VDCD.BL")]
 [assembly: System.Reflection.AssemblyTitleAttribute("VDCD.BL")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

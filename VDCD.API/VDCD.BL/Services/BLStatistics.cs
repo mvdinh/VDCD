@@ -37,7 +37,7 @@ namespace VDCD.BL.Services
                 .GroupBy(od => od.Product!.Category!.CategoryName)
                 .Select(g => new CategorySalesQuantityResponse
                 {
-                    CategoryName = g.Key ?? "ChÆ°a phÃ¢n loáº¡i",
+                    CategoryName = g.Key ,
                     TotalQuantitySold = g.Sum(od => od.Quantity),
                     FromDate = start,
                     ToDate = end

@@ -151,7 +151,7 @@ namespace VDCD.BL.Services
             var isInOrders = await _orderDetailDL.AnyAsync(od => od.ProductId == id);
             if (isInOrders)
             {
-                throw new InvalidOperationException("KhÃ´ng thá»ƒ xÃ³a sáº£n pháº©m nÃ y vÃ¬ Ä‘Ã£ phÃ¡t sinh trong giao dá»‹ch bÃ¡n hÃ ng.");
+                throw new InvalidOperationException("Không thể xóa sản phẩm này vì đã phát sinh trong giao dịch bán hàng.");
             }
 
             await _productDL.DeleteAsync(id);

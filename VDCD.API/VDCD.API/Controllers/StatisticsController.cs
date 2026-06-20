@@ -73,7 +73,7 @@ namespace VDCD.API.Controllers
                 var report = await _statisticsService.GetProductRevenueAsync(productId, fromDate, toDate);
                 if (report == null)
                 {
-                    return NotFound(new { message = $"KhÃ´ng tÃ¬m tháº¥y sáº£n pháº©m cÃ³ mÃ£ {productId}" });
+                    return NotFound(new { message = $"Không tìm thấy sản phẩm có mã {productId}" });
                 }
                 return Ok(report);
             }
