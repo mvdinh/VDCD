@@ -22,7 +22,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// Táº¡o Ä‘Æ¡n hÃ ng má»›i (BÃ¡n hÃ ng cho khÃ¡ch)
+        /// tạo đơn hàng mới
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<OrderResponse>> CreateOrder([FromBody] CreateOrderRequest request)
@@ -57,8 +57,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// Xem chi tiáº¿t má»™t Ä‘Æ¡n hÃ ng kÃ¨m danh sÃ¡ch sáº£n pháº©m Ä‘Ã£ mua
-        /// </summary>
+        /// Xem chi tiết đơn hàng
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderResponse>> GetOrderById(Guid id)
         {
@@ -67,7 +66,7 @@ namespace VDCD.API.Controllers
                 var order = await _salesService.GetOrderByIdAsync(id);
                 if (order == null)
                 {
-                    return NotFound(new { message = $"KhÃ´ng tÃ¬m tháº¥y Ä‘Æ¡n hÃ ng cÃ³ mÃ£ {id}" });
+                    return NotFound(new { message = $"Không tìm thấy đơn hàng có mã {id}" });
                 }
                 return Ok(order);
             }
@@ -83,7 +82,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// Láº¥y danh sÃ¡ch táº¥t cáº£ cÃ¡c hÃ³a Ä‘Æ¡n bÃ¡n hÃ ng
+        /// Lấy danh sách tất cả các hóa đơn bán hàng
         /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderResponse>>> GetAllOrders()

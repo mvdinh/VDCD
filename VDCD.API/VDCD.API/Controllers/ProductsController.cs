@@ -22,7 +22,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// Láº¥y táº¥t cáº£ sáº£n pháº©m
+        /// Lấy tất cả sản phẩm
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -52,7 +52,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// Láº¥y sáº£n pháº©m theo ID
+        /// Lấy sản phẩm theo ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -84,7 +84,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// ThÃªm má»›i máº·t hÃ ng gá»‘m sá»©
+        /// Thêm mới sản phẩm
         /// </summary>
         [HttpPost]
         public async Task<ActionResult<ProductResponse>> CreateProduct([FromBody] ProductCreateRequest request)
@@ -115,7 +115,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// Cáº­p nháº­t thÃ´ng tin máº·t hÃ ng gá»‘m sá»©
+        /// Cập nhật thông tin sản phẩm
         /// </summary>
         [HttpPut("{id}")]
         public async Task<ActionResult<ProductResponse>> UpdateProduct(Guid id, [FromBody] ProductUpdateRequest request)
@@ -154,7 +154,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// XÃ³a máº·t hÃ ng gá»‘m sá»©
+        /// Xóa sản phẩm
         /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)

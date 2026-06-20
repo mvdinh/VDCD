@@ -22,7 +22,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// Thá»‘ng kÃª sá»‘ lÆ°á»£ng bÃ¡n Ä‘Æ°á»£c trong ngÃ y hoáº·c khoáº£ng thá»i gian cá»§a má»—i loáº¡i sáº£n pháº©m (Category)
+        /// Thông kê số lượng bán được trong ngày hoặc khoảng thời gian của mỗi loại sản phẩm (Category)
         /// </summary>
         [HttpGet("category-sales")]
         public async Task<ActionResult<IEnumerable<CategorySalesQuantityResponse>>> GetCategorySalesQuantity(
@@ -53,7 +53,7 @@ namespace VDCD.API.Controllers
         }
 
         /// <summary>
-        /// Tra cá»©u sá»‘ tiá»n bÃ¡n Ä‘Æ°á»£c (doanh thu) cá»§a 1 sáº£n pháº©m (Product) trong khoáº£ng thá»i gian
+        /// Tra cứu số tiền bán được (doanh thu) của 1 sản phẩm (Product) trong khoảng thời gian
         /// </summary>
         [HttpGet("product-revenue/{productId}")]
         public async Task<ActionResult<ProductRevenueResponse>> GetProductRevenue(

@@ -79,12 +79,12 @@ namespace VDCD.BL.Services
                     throw new InvalidOperationException($"Sản phẩm '{product.ProductName}' không đủ tồn kho. Hiện còn: {product.Quantity}, yêu cầu: {item.Quantity}.");
                 }
 
-                // Enforce unit price to always be the DB product price
+              
                 decimal unitPrice = product.Price;
                 decimal subTotal = item.Quantity * unitPrice;
                 totalAmount += subTotal;
 
-                // Deduct stock in C# (so it works without database triggers)
+                // Deduct stock 
                 product.Quantity -= item.Quantity;
                 await _productDL.UpdateAsync(product);
 
@@ -111,7 +111,7 @@ namespace VDCD.BL.Services
                 OrderDate = DateTime.UtcNow,
                 TotalAmount = totalAmount,
                 Discount = request.Discount,
-                FinalAmount = Math.Max(0, totalAmount - request.Discount), // Handled in C#
+                FinalAmount = Math.Max(0, totalAmount - request.Discount), 
                 PaymentMethod = request.PaymentMethod,
                 Note = request.Note,
                 CreatedDate = DateTime.UtcNow,

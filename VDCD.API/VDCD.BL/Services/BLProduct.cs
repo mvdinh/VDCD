@@ -51,21 +51,21 @@ namespace VDCD.BL.Services
 
         public async Task<ProductResponse> InsertProductAsync(ProductCreateRequest request)
         {
-            // 0. Verify User
+            //  Verify User
             var user = await _userDL.GetByIdAsync(request.CreatedBy);
             if (user == null)
             {
                 throw new ArgumentException($"Người dùng với mã {request.CreatedBy} không tồn tại.");
             }
 
-            // 1. Verify Category exists
+            // Verify Category exists
             var category = await _categoryDL.GetByIdAsync(request.CategoryId);
             if (category == null)
             {
                 throw new ArgumentException($"{request.CategoryId} không tồn tại");
             }
 
-            // 1.5. Verify Unit exists
+            //  Verify Unit exists
             var unit = await _unitDL.GetByIdAsync(request.UnitId);
             if (unit == null)
             {
@@ -147,7 +147,6 @@ namespace VDCD.BL.Services
             if (product == null) return false;
 
             // Check if product is in any orders
-            // To do this, we can search in order_details using EF core
             var isInOrders = await _orderDetailDL.AnyAsync(od => od.ProductId == id);
             if (isInOrders)
             {

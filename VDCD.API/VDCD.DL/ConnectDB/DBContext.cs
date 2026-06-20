@@ -45,8 +45,7 @@ namespace VDCD.DL.ConnectDB
                 }
             }
 
-            // Manual calculations are used instead of database computed columns
-            // FinalAmount and SubTotal are calculated in BLOrder.cs
+            
         }
     }
 }
